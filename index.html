@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dram</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css?r=17" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three.module.js",
+        "three/addons/": "./vendor/",
+        "three-mesh-bvh": "./vendor/csg/three-mesh-bvh.module.js",
+        "three-bvh-csg": "./vendor/csg/three-bvh-csg.module.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="app is-home" id="app">
+    <header class="titlebar">
+      <div class="title-row">
+        <div class="traffic">
+          <span class="dot close"></span>
+          <span class="dot min"></span>
+          <span class="dot max"></span>
+        </div>
+        <button type="button" class="brand" id="brand" title="Torna al menu" aria-label="Dram">
+          <img class="brand-mark" src="logo/dram-logo.svg" alt="" width="22" height="22" />
+          <span class="brand-word">Dra<span class="brand-m">w</span></span>
+        </button>
+        <span class="grow"></span>
+        <button class="panel-toggle" id="box-toggle" type="button" title="Fogli salvati">Box</button>
+        <button class="panel-toggle is-on" id="panel-toggle" type="button" title="Pannello funzioni">Funzioni</button>
+      </div>
+      <div class="fn-row fn-bar" id="fn-bar">
+        <button type="button" data-fn="new" title="Nuovo">Nuovo</button>
+        <button type="button" data-fn="open" title="Apri">Apri</button>
+        <button type="button" data-fn="save" title="Salva">Salva</button>
+        <span class="sep"></span>
+        <button type="button" data-fn="undo" title="Annulla (⌘Z)">Annulla</button>
+        <button type="button" data-fn="redo" title="Ripeti (⇧⌘Z)">Ripeti</button>
+        <span class="sep"></span>
+        <button type="button" data-fn="grid" title="Griglia">Griglia</button>
+        <button type="button" data-fn="snap" title="Snap">Snap</button>
+        <span class="sep"></span>
+        <button type="button" data-fn="zoom-out" title="Zoom −">−</button>
+        <span class="zoom-read" id="zoom-read">100%</span>
+        <button type="button" data-fn="zoom-in" title="Zoom +">+</button>
+        <button type="button" data-fn="zoom-fit" title="Adatta">Adatta</button>
+        <span class="sep"></span>
+        <button type="button" data-fn="export" title="Esporta">Esporta</button>
+        <span class="sep color-sep"></span>
+        <div class="color-bar" id="color-bar" title="Colore tratto">
+          <button type="button" class="c-chip is-on" data-color="#c6a53a" style="background:#c6a53a" title="Giallo"></button>
+          <button type="button" class="c-chip" data-color="#9a812c" style="background:#9a812c" title="Ocra"></button>
+          <button type="button" class="c-chip" data-color="#e8d48a" style="background:#e8d48a" title="Chiaro"></button>
+          <button type="button" class="c-chip" data-color="#1a1a1a" style="background:#1a1a1a" title="Nero"></button>
+          <button type="button" class="c-chip" data-color="#e8e8e8" style="background:#e8e8e8" title="Bianco"></button>
+          <label class="c-chip c-pick" title="Altro colore"><input id="bar-color" type="color" value="#c6a53a" /></label>
+        </div>
+      </div>
+    </header>
+
+    <div class="work">
+      <aside class="rail" id="rail" aria-label="Forme e pennelli"></aside>
+
+      <main class="stage">
+        <div class="canvas-wrap" id="canvas-wrap" role="application" aria-label="Area di lavoro" tabindex="0">
+          <div class="home" id="home">
+            <div class="home-inner">
+              <div class="format-grid">
+                <button type="button" class="format-card" data-open="draw">
+                  <span class="format-name">Disegno</span>
+                </button>
+                <button type="button" class="format-card" data-open="pixel">
+                  <span class="format-name">Pixel art</span>
+                </button>
+                <button type="button" class="format-card" data-open="model">
+                  <span class="format-name">3D</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="picker" id="draw-picker" hidden>
+            <div class="picker-inner">
+              <p class="home-kicker">Disegno</p>
+              <h2>Quanto è grande il foglio?</h2>
+              <div class="size-grid" id="draw-size-grid"></div>
+              <div class="size-custom">
+                <label>Misure libere</label>
+                <div class="size-custom-row">
+                  <input id="draw-cw" type="number" min="64" max="8192" value="1920" />
+                  <span>×</span>
+                  <input id="draw-ch" type="number" min="64" max="8192" value="1080" />
+                  <button type="button" class="btn" id="draw-custom">Usa</button>
+                </div>
+              </div>
+              <button type="button" class="btn ghost" id="draw-picker-cancel">Annulla</button>
+            </div>
+          </div>
+
+          <div class="picker" id="picker" hidden>
+            <div class="picker-inner">
+              <p class="home-kicker">Pixel art</p>
+              <h2>Quanto grande è lo sprite?</h2>
+              <div class="size-grid">
+                <button type="button" class="size-card" data-px="16">
+                  <span class="size-preview" data-cells="16"></span>
+                  <strong>16 × 16</strong>
+                  <span>Icona, tile piccolo</span>
+                </button>
+                <button type="button" class="size-card" data-px="32">
+                  <span class="size-preview" data-cells="8"></span>
+                  <strong>32 × 32</strong>
+                  <span>Sprite personaggio</span>
+                </button>
+                <button type="button" class="size-card" data-px="64">
+                  <span class="size-preview" data-cells="6"></span>
+                  <strong>64 × 64</strong>
+                  <span>Dettaglio, oggetto</span>
+                </button>
+              </div>
+              <button type="button" class="btn ghost" id="picker-cancel">Annulla</button>
+            </div>
+          </div>
+
+          <canvas id="view" hidden></canvas>
+          <div id="view3d" class="view3d" hidden></div>
+          <div id="face-wheel" class="face-wheel" hidden>
+            <span class="face-wheel-lab">Faccia</span>
+            <input id="face-k" type="range" min="0" max="100" value="0" />
+            <span class="face-wheel-min">Angoli combaciano</span>
+          </div>
+        </div>
+        <footer class="statusbar">
+          <span id="status-tool">Nessun tavolo</span>
+          <span id="status-pos">—</span>
+          <span id="status-size">Scegli un formato</span>
+        </footer>
+      </main>
+
+      <aside class="side" id="side" aria-label="Funzioni">
+        <div class="side-head">
+          <span id="side-title">Funzioni</span>
+          <button type="button" class="icon-btn" id="side-close" title="Chiudi">✕</button>
+        </div>
+        <div class="side-body" id="side-body"></div>
+        <div class="side-body box-body" id="box-body" hidden></div>
+      </aside>
+    </div>
+  </div>
+  <script type="module" src="js/app.js?r=15"></script>
+</body>
+</html>

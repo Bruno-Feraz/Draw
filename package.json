@@ -1,0 +1,44 @@
+{
+  "name": "dram",
+  "productName": "Dram",
+  "version": "0.1.0",
+  "description": "Disegno, pixel e 3D per asset di gioco",
+  "main": "electron/main.cjs",
+  "author": "Dram",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --mac dir dmg"
+  },
+  "build": {
+    "appId": "it.dram.app",
+    "productName": "Dram",
+    "copyright": "Dram",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "index.html",
+      "js/**/*",
+      "css/**/*",
+      "vendor/**/*",
+      "logo/**/*",
+      "electron/main.cjs"
+    ],
+    "mac": {
+      "category": "public.app-category.graphics-design",
+      "icon": "logo/dram-logo.icns",
+      "identity": null,
+      "target": [
+        { "target": "dir", "arch": ["arm64"] },
+        { "target": "dmg", "arch": ["arm64"] }
+      ]
+    },
+    "dmg": {
+      "title": "Dram"
+    }
+  },
+  "devDependencies": {
+    "electron": "^36.3.1",
+    "electron-builder": "^26.0.12"
+  }
+}
